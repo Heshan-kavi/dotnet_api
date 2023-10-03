@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace dotnet_api.Dtos
 {
-    public class Character
+    public class AddCharacterDto
     {
         
     }
