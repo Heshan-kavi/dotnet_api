@@ -26,7 +26,12 @@ namespace dotnet_api.Services.CharacterService
         }
         
         public Character GetSingleCharacter (int id){
-            return characters.FirstOrDefault(c => c.Id == id);
+            var character = characters.FirstOrDefault(c => c.Id == id);
+            if(character is not null){
+                return character;
+            }
+
+            throw new Exception("Character not found in this occasion");
         }
     }
 }
