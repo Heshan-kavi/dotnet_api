@@ -74,5 +74,27 @@ namespace dotnet_api.Services.CharacterService
             serviceResponse.Message = character is not null ? "We found the character for you" : "We couldn't find the character that you're looking for";
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter (int id){
+            var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
+
+            try{
+                var character = characters.FirstOrDefault(c => c.Id == id);
+
+                if(character is null){
+                throw new Exception($"Cannot identify this character to delelete !!!");
+                }
+
+                characters.Remove(character);
+                serviceResponse.Data = characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToList();
+                serviceResponse.Message = "We deleted the character for you";
+                return serviceResponse;
+            }
+            catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
+        }
     }
 }
