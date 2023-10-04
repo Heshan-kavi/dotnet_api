@@ -33,6 +33,33 @@ namespace dotnet_api.Services.CharacterService
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter (UpdateCharacterDto updatedCharacter){
+            var serviceResponse = new ServiceResponse<GetCharacterDto>();
+            try{
+                var character = characters.FirstOrDefault(c => c.Id == updatedCharacter.Id);
+
+                if(character is null){
+                    throw new Exception($"Your requested character not found in here !!!");
+                }
+
+                character.Name = updatedCharacter.Name;
+                character.HitPoints = updatedCharacter.HitPoints;
+                character.Strength = updatedCharacter.Strength;
+                character.Defence = updatedCharacter.Defence;
+                character.Intelligence = updatedCharacter.Intelligence;
+                character.Class = updatedCharacter.Class;
+
+                serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
+                serviceResponse.Message = "Relevant Character updated successfully !!!";
+                return serviceResponse;
+            }
+            catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
+        }
+
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters (){
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
             serviceResponse.Data = characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToList();
