@@ -13,7 +13,8 @@ namespace dotnet_api.Controllers
         private static List<Character> characters = new List<Character>{
             new Character(),
             new Character{
-                Name = "Sam"
+                Name = "Sam",
+                Id = 1
             }
         };
 
@@ -22,9 +23,9 @@ namespace dotnet_api.Controllers
             return Ok(characters);
         }
 
-        [HttpGet]
-        public ActionResult<Character> GetSingleCharacter(){
-            return Ok(characters[0]);
+        [HttpGet("{id}")]
+        public ActionResult<Character> GetSingleCharacter(int id){
+            return Ok(characters.FirstOrDefault(c => c.Id == id));
         }
 
         
