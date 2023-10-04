@@ -10,7 +10,6 @@ namespace dotnet_api
         public AutoMapperProfile(){
             CreateMap<Character, GetCharacterDto>();
             CreateMap<AddCharacterDto, Character>();
-            // CreateMap<UpdateCharacterDto, GetCharacterDto>();
         }
     }
 }
