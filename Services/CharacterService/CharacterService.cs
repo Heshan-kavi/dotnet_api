@@ -16,22 +16,26 @@ namespace dotnet_api.Services.CharacterService
             }
         };
 
-        public async Task<List<Character>> AddCharacter (Character newCharacter){
+        public async Task<ServiceResponse<List<Character>>> AddCharacter (Character newCharacter){
+            var serviceResponse = new ServiceResponse<List<Character>>();
             characters.Add(newCharacter);
-            return characters;
+            serviceResponse.Data = characters;
+            return serviceResponse;
         }
 
-        public async Task<List<Character>> GetAllCharacters (){
-            return characters;
+        public async Task<ServiceResponse<List<Character>>> GetAllCharacters (){
+            var serviceResponse = new ServiceResponse<List<Character>>();
+            serviceResponse.Data = characters;
+            return serviceResponse;
         }
         
-        public async Task<Character> GetSingleCharacter (int id){
+        public async Task<ServiceResponse<Character>> GetSingleCharacter (int id){
             var character = characters.FirstOrDefault(c => c.Id == id);
-            if(character is not null){
-                return character;
-            }
-
-            throw new Exception("Character not found in this occasion");
+            var serviceResponse = new ServiceResponse<Character>();
+            serviceResponse.Data = character;
+            serviceResponse.Success = character is not null ? true : false;
+            serviceResponse.Message = character is not null ? "We found the character for you" : "We couldn't find the character that you're looking for";
+            return serviceResponse;
         }
     }
 }
