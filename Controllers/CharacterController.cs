@@ -1,3 +1,6 @@
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +33,15 @@ namespace dotnet_api.Controllers
         [HttpPost()]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> AddCharacter(AddCharacterDto newCharacter){
             return Ok(await _characterService.AddCharacter(newCharacter));
+        }
+
+        [HttpPut()]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> UpdateCharacter(UpdateCharacterDto updatedCharacter){
+            var response = await _characterService.UpdateCharacter(updatedCharacter);
+            if(!response.Success){
+                return NotFound(response);
+            }
+            return Ok(response);
         }
 
         
