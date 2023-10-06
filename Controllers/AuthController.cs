@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Net;
 using System.Net.Cache;
 using System.ComponentModel.Design;
@@ -29,6 +30,11 @@ namespace dotnet_api.Controllers
                 new User{UserName = request.UserName}, 
                 request.Password
             );
+
+            if(!response.Success){
+                return BadRequest(response);
+            }
+
             return Ok(response);
         }
     }

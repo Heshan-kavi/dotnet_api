@@ -9,6 +9,6 @@ namespace dotnet_api.Data
     {
         Task<ServiceResponse<int>> Register (User user, string password);
         Task<ServiceResponse<int>> Login (string userName, string password);
-        Task<int> UserExists (UserRegisterDto userRegisterRequest);
+        Task<bool> UserExists (string userName);
     }
 }

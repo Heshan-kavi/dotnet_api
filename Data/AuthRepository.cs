@@ -1,3 +1,4 @@
+using System.Buffers.Text;
 using System.Reflection.Metadata;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -21,12 +22,19 @@ namespace dotnet_api.Data
         public async Task<ServiceResponse<int>> Register (User user, string password)
         {
             var serviceResponse = new ServiceResponse<int>();
+
+            if(await UserExists(user.UserName)){
+                serviceResponse.Message = "User Exists";
+                serviceResponse.Success = false;
+                return serviceResponse;
+            }
             CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             _dataContext.Users.Add(user);
             await _dataContext.SaveChangesAsync();
             serviceResponse.Data = user.Id;
+            serviceResponse.Message = "User Registered Successfully";
             return serviceResponse;
         }
 
@@ -36,8 +44,11 @@ namespace dotnet_api.Data
             return serviceResponse;
         }
 
-        public async Task<int> UserExists (UserRegisterDto userRegisterRequest){
-            return 12;
+        public async Task<bool> UserExists (string userName){
+            if(await _dataContext.Users.AnyAsync(c => c.UserName.ToLower() == userName.ToLower())){
+                return true;
+            }
+            return false;
         }
 
         private void CreatePasswordHash (string password, out byte[] passwordHash, out byte[] passwordSalt){
