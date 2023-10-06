@@ -18,25 +18,27 @@ namespace dotnet_api.Services.CharacterService
         };
 
         private readonly IMapper _mapper;
+        private readonly DataContext _context;
 
-        public CharacterService(IMapper mapper)
+        public CharacterService(IMapper mapper, DataContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
 
         public async Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter (AddCharacterDto newCharacter){
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
             var character = _mapper.Map<Character>(newCharacter);
-            character.Id = characters.Max(character => character.Id) + 1;
-            characters.Add(character);
-            serviceResponse.Data = characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToList();
+            _context.Characters.Add(character);
+            await _context.SaveChangesAsync();
+            serviceResponse.Data = await _context.Characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToListAsync();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter (UpdateCharacterDto updatedCharacter){
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             try{
-                var character = characters.FirstOrDefault(c => c.Id == updatedCharacter.Id);
+                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id);
 
                 if(character is null){
                     throw new Exception($"Your requested character not found in here !!!");
@@ -49,6 +51,7 @@ namespace dotnet_api.Services.CharacterService
                 character.Intelligence = updatedCharacter.Intelligence;
                 character.Class = updatedCharacter.Class;
 
+                await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
                 serviceResponse.Message = "Relevant Character updated successfully !!!";
                 return serviceResponse;
@@ -62,12 +65,12 @@ namespace dotnet_api.Services.CharacterService
 
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters (){
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
-            serviceResponse.Data = characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToList();
+            serviceResponse.Data = await _context.Characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToListAsync();
             return serviceResponse;
         }
         
         public async Task<ServiceResponse<GetCharacterDto>> GetSingleCharacter (int id){
-            var character = characters.FirstOrDefault(c => c.Id == id);
+            var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
             serviceResponse.Success = character is not null ? true : false;
@@ -79,14 +82,16 @@ namespace dotnet_api.Services.CharacterService
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
 
             try{
-                var character = characters.FirstOrDefault(c => c.Id == id);
+                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
 
                 if(character is null){
                 throw new Exception($"Cannot identify this character to delelete !!!");
                 }
 
-                characters.Remove(character);
-                serviceResponse.Data = characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToList();
+                _context.Characters.Remove(character);
+                await _context.SaveChangesAsync();
+                
+                serviceResponse.Data = await _context.Characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToListAsync();
                 serviceResponse.Message = "We deleted the character for you";
                 return serviceResponse;
             }
