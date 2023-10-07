@@ -1,3 +1,7 @@
+using System.Data;
+using System.Security.Claims;
+using System.Collections.Specialized;
+using System.Text;
 using System.Diagnostics;
 using System.Runtime;
 using System.Buffers.Text;
@@ -40,8 +44,8 @@ namespace dotnet_api.Data
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<int>> Login (string userName, string password){
-            var serviceResponse = new ServiceResponse<int>();
+        public async Task<ServiceResponse<string>> Login (string userName, string password){
+            var serviceResponse = new ServiceResponse<string>();
             var user = await _dataContext.Users.FirstOrDefaultAsync(user => user.UserName == userName);
             if(user is null){
                 serviceResponse.Success = false;
@@ -51,7 +55,7 @@ namespace dotnet_api.Data
                 serviceResponse.Message = "User or password not correct !";
             }else{
                 serviceResponse.Message = "User founded !";
-                serviceResponse.Data = user.Id;
+                serviceResponse.Data = CreateToken(user);
             }
             return serviceResponse;
         }
@@ -75,6 +79,17 @@ namespace dotnet_api.Data
                 var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return (computedHash.SequenceEqual(passwordHash));
             }
+        }
+
+        private string CreateToken (User user){
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            return string.Empty;
         }
     }
 }
