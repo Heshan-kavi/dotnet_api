@@ -1,3 +1,4 @@
+using System.IO.Enumeration;
 using System.Data;
 using System.Security.Claims;
 using System.Collections.Specialized;
@@ -14,15 +15,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace dotnet_api.Data
 {
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext _dataContext;
+        private readonly IConfiguration _configuration;
 
-        public AuthRepository(DataContext dataContext){
+        public AuthRepository(DataContext dataContext, IConfiguration configuration){
             _dataContext = dataContext;
+            _configuration = configuration;
         }
 
         public async Task<ServiceResponse<int>> Register (User user, string password)
@@ -89,7 +94,18 @@ namespace dotnet_api.Data
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
-            return string.Empty;
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:Token").Value));
+
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
