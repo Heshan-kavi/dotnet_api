@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Runtime;
 using System.Buffers.Text;
 using System.Reflection.Metadata;
 using System.IO;
@@ -40,7 +42,17 @@ namespace dotnet_api.Data
 
         public async Task<ServiceResponse<int>> Login (string userName, string password){
             var serviceResponse = new ServiceResponse<int>();
-            serviceResponse.Data = 12;
+            var user = await _dataContext.Users.FirstOrDefaultAsync(user => user.UserName == userName);
+            if(user is null){
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User not found !";
+            }else if(!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt)){
+                serviceResponse.Success = false;
+                serviceResponse.Message = "User or password not correct !";
+            }else{
+                serviceResponse.Message = "User founded !";
+                serviceResponse.Data = user.Id;
+            }
             return serviceResponse;
         }
 
@@ -55,6 +67,13 @@ namespace dotnet_api.Data
             using(var hmac = new System.Security.Cryptography.HMACSHA512()){
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
+        }
+
+        private bool VerifyPasswordHash (string password, byte[] passwordHash, byte[] passwordSalt){
+            using(var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt)){
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                return (computedHash.SequenceEqual(passwordHash));
             }
         }
     }
