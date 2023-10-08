@@ -1,3 +1,5 @@
+using System.Security.AccessControl;
+using System.Security.Claims;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net;
@@ -24,7 +26,8 @@ namespace dotnet_api.Controllers
 
         [HttpGet("GetAll")]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> Get(){
-            return Ok(await _characterService.GetAllCharacters());
+            int userId = int.Parse(User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
+            return Ok(await _characterService.GetAllCharacters(userId));
         }
 
         [HttpGet("{id}")]
