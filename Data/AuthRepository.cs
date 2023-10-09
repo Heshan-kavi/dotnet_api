@@ -1,3 +1,8 @@
+using System.IO.Enumeration;
+using System.Data;
+using System.Security.Claims;
+using System.Collections.Specialized;
+using System.Text;
 using System.Diagnostics;
 using System.Runtime;
 using System.Buffers.Text;
@@ -10,15 +15,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace dotnet_api.Data
 {
     public class AuthRepository : IAuthRepository
     {
         private readonly DataContext _dataContext;
+        private readonly IConfiguration _configuration;
 
-        public AuthRepository(DataContext dataContext){
+        public AuthRepository(DataContext dataContext, IConfiguration configuration){
             _dataContext = dataContext;
+            _configuration = configuration;
         }
 
         public async Task<ServiceResponse<int>> Register (User user, string password)
@@ -40,8 +49,8 @@ namespace dotnet_api.Data
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<int>> Login (string userName, string password){
-            var serviceResponse = new ServiceResponse<int>();
+        public async Task<ServiceResponse<string>> Login (string userName, string password){
+            var serviceResponse = new ServiceResponse<string>();
             var user = await _dataContext.Users.FirstOrDefaultAsync(user => user.UserName == userName);
             if(user is null){
                 serviceResponse.Success = false;
@@ -51,7 +60,7 @@ namespace dotnet_api.Data
                 serviceResponse.Message = "User or password not correct !";
             }else{
                 serviceResponse.Message = "User founded !";
-                serviceResponse.Data = user.Id;
+                serviceResponse.Data = CreateToken(user);
             }
             return serviceResponse;
         }
@@ -75,6 +84,28 @@ namespace dotnet_api.Data
                 var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 return (computedHash.SequenceEqual(passwordHash));
             }
+        }
+
+        private string CreateToken (User user){
+
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:Token").Value));
+
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }
