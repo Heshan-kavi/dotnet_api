@@ -63,9 +63,10 @@ namespace dotnet_api.Services.CharacterService
             }
         }
 
-        public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters (){
+        public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters (int userId){
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
-            serviceResponse.Data = await _context.Characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToListAsync();
+            var returnedCharacters = await _context.Characters.Where(character => character.User.Id == userId).ToListAsync();
+            serviceResponse.Data = returnedCharacters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToList();
             return serviceResponse;
         }
         
