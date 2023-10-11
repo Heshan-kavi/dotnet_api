@@ -81,7 +81,7 @@ namespace dotnet_api.Services.CharacterService
         }
         
         public async Task<ServiceResponse<GetCharacterDto>> GetSingleCharacter (int id){
-            var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
+            var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
             serviceResponse.Success = character is not null ? true : false;
