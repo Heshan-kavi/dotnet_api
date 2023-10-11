@@ -93,7 +93,7 @@ namespace dotnet_api.Services.CharacterService
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
 
             try{
-                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
+                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
 
                 if(character is null){
                 throw new Exception($"Cannot identify this character to delelete !!!");
