@@ -90,10 +90,11 @@ namespace dotnet_api.Services.CharacterService
         }
 
         public async Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter (int id){
+            var userId = GetUserId();
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
 
             try{
-                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
+                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id && c.User.Id == userId);
 
                 if(character is null){
                 throw new Exception($"Cannot identify this character to delelete !!!");
@@ -102,7 +103,9 @@ namespace dotnet_api.Services.CharacterService
                 _context.Characters.Remove(character);
                 await _context.SaveChangesAsync();
                 
-                serviceResponse.Data = await _context.Characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToListAsync();
+                serviceResponse.Data = await _context.Characters
+                    .Where(character => character.User.Id == userId)
+                    .Select(character => _mapper.Map<GetCharacterDto>(character)).ToListAsync();
                 serviceResponse.Message = "We deleted the character for you";
                 return serviceResponse;
             }
