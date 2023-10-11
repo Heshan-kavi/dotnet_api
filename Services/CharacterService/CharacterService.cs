@@ -34,9 +34,13 @@ namespace dotnet_api.Services.CharacterService
         public async Task<ServiceResponse<List<GetCharacterDto>>> AddCharacter (AddCharacterDto newCharacter){
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
             var character = _mapper.Map<Character>(newCharacter);
+            character.User = await _context.Users.FirstOrDefaultAsync(user => user.Id == GetUserId());
             _context.Characters.Add(character);
             await _context.SaveChangesAsync();
-            serviceResponse.Data = await _context.Characters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToListAsync();
+            serviceResponse.Data = await _context.Characters
+                .Where(character => character.User.Id == GetUserId())
+                .Select(character => _mapper.Map<GetCharacterDto>(character))
+                .ToListAsync();
             return serviceResponse;
         }
 
