@@ -1,6 +1,7 @@
 global using dotnet_api.Models ;
 global using dotnet_api.Services.CharacterService ;
 global using dotnet_api.Dtos.Character ;
+global using dotnet_api.Dtos.Weapon ;
 global using dotnet_api.Dtos.User ;
 global using Microsoft.EntityFrameworkCore;
 global using dotnet_api.Data;
