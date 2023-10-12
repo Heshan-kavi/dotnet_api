@@ -48,7 +48,7 @@ namespace dotnet_api.Services.CharacterService
         public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter (UpdateCharacterDto updatedCharacter){
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             try{
-                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id);
+                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id && c.User.Id == GetUserId());
 
                 if(character is null){
                     throw new Exception($"Your requested character not found in here !!!");
