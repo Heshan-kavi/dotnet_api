@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Claims;
 using System.Net.Http;
@@ -52,6 +53,15 @@ namespace dotnet_api.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> DeleteCharacter(int id){
             var response = await _characterService.DeleteCharacter(id);
             if(!response.Success){
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPost("Skill")]
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> AddSkill(AddCharacterSkillDto newCharacterSkill){
+            var response = await _characterService.AddSkill(newCharacterSkill);
+            if(response.Success){
                 return NotFound(response);
             }
             return Ok(response);
