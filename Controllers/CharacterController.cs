@@ -61,7 +61,7 @@ namespace dotnet_api.Controllers
         [HttpPost("Skill")]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> AddSkill(AddCharacterSkillDto newCharacterSkill){
             var response = await _characterService.AddSkill(newCharacterSkill);
-            if(response.Success){
+            if(!response.Success){
                 return NotFound(response);
             }
             return Ok(response);
