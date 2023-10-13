@@ -1,6 +1,4 @@
 global using AutoMapper;
-using System.Xml;
-using System.Reflection.PortableExecutable;
 using System.Security.Claims;
 using System;
 using System.Collections.Generic;
@@ -22,10 +20,12 @@ namespace dotnet_api.Services.WeaponService
             _httpContextAccessor = httpContextAccessor;
         } 
 
+        private int GetUserId () => int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
         public async Task<ServiceResponse<GetCharacterDto>> AddWeapon(AddWeaponDto newWeapon){
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             try{
-                var character = await _context.Characters.FirstOrDefaultAsync(character => character.Id == newWeapon.CharacterId && character.User.Id == int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value));
+                var character = await _context.Characters.FirstOrDefaultAsync(character => character.Id == newWeapon.CharacterId && character.User.Id == GetUserId());
                 if(character is null){
                     serviceResponse.Success = false;
                     serviceResponse.Message = "Couldn't do the add weapon operations at the moment!!!";
