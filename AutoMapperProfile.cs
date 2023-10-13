@@ -11,6 +11,7 @@ namespace dotnet_api
             CreateMap<Character, GetCharacterDto>();
             CreateMap<AddCharacterDto, Character>();
             CreateMap<AddWeaponDto, Weapon>();
+            CreateMap<Weapon, GetWeaponDto>();
         }
     }
 }
