@@ -4,6 +4,7 @@ global using dotnet_api.Services.WeaponService ;
 global using dotnet_api.Dtos.Character ;
 global using dotnet_api.Dtos.Weapon ;
 global using dotnet_api.Dtos.User ;
+global using dotnet_api.Dtos.Skill ;
 global using Microsoft.EntityFrameworkCore;
 global using dotnet_api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
