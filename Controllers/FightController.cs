@@ -28,5 +28,14 @@ namespace dotnet_api.Controllers
             }
             return Ok(response);
         }
+
+        [HttpPost("Skill")]
+        public async Task<ActionResult<ServiceResponse<AttackResultDto>>> SkillAttack(SkillAttackDto request){
+            var response = await _fightService.SkillAttack(request);
+            if(!response.Success){
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
     }
 }
