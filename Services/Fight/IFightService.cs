@@ -7,6 +7,6 @@ namespace dotnet_api.Services.Fight
 {
     public interface IFightService
     {
-        Task<ServiceResponse<GetCharacterDto>> GetFights();
+        Task<ServiceResponse<AttackResultDto>> WeaponAttack(WeaponAttackDto request);
     }
 }
