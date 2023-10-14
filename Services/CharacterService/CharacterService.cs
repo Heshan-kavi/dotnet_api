@@ -115,5 +115,33 @@ namespace dotnet_api.Services.CharacterService
                 return serviceResponse;
             }
         }
+
+        public async Task<ServiceResponse<GetCharacterDto>> AddSkill (AddCharacterSkillDto newCharacterSkill){
+            var serviceResponse = new ServiceResponse<GetCharacterDto>();
+            try{
+                var character = await _context.Characters
+                                    .Include(character => character.Weapon)
+                                    .Include(character => character.Skills)
+                                    .FirstOrDefaultAsync(character => character.Id == newCharacterSkill.CharacterId && character.Id == GetUserId());
+                if(character is null){
+                    throw new Exception($"Cannot find the Character to add the new skill");
+                }
+
+                var skill = await _context.Skills.FirstOrDefaultAsync(skill => skill.Id == newCharacterSkill.SkillId);
+                if(skill is null){
+                    throw new Exception($"Not a valid skill to add");
+                }
+                character.Skills.Add(skill);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
+                return serviceResponse;
+
+            }catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+
+                return serviceResponse;
+            }
+        }
     }
 }
