@@ -122,7 +122,7 @@ namespace dotnet_api.Services.CharacterService
                 var character = await _context.Characters
                                     .Include(character => character.Weapon)
                                     .Include(character => character.Skills)
-                                    .FirstOrDefaultAsync(character => character.Id == newCharacterSkill.CharacterId && character.Id == GetUserId());
+                                    .FirstOrDefaultAsync(character => character.Id == newCharacterSkill.CharacterId && character.User.Id == GetUserId());
                 if(character is null){
                     throw new Exception($"Cannot find the Character to add the new skill");
                 }
