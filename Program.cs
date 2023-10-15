@@ -1,10 +1,12 @@
 global using dotnet_api.Models ;
 global using dotnet_api.Services.CharacterService ;
 global using dotnet_api.Services.WeaponService ;
+global using dotnet_api.Services.Fight ;
 global using dotnet_api.Dtos.Character ;
 global using dotnet_api.Dtos.Weapon ;
 global using dotnet_api.Dtos.User ;
 global using dotnet_api.Dtos.Skill ;
+global using dotnet_api.Dtos.Fight ;
 global using Microsoft.EntityFrameworkCore;
 global using dotnet_api.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -34,6 +36,7 @@ builder.Services.AddSwaggerGen(config => {
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 builder.Services.AddScoped<ICharacterService, CharacterService>();
 builder.Services.AddScoped<IWeaponService, WeaponService>();
+builder.Services.AddScoped<IFightService, FightService>();
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
     options.TokenValidationParameters = new TokenValidationParameters {
