@@ -16,9 +16,11 @@ namespace dotnet_api.Services.Fight
     public class FightService : IFightService
     {
         private readonly DataContext _context;
+        private readonly IMapper _mapper;
 
-        public FightService (DataContext context){
+        public FightService (DataContext context, IMapper mapper){
             _context = context;
+            _mapper = mapper;
         }
 
         private static int DoWeaponAttack(Character attacker, Character opponent){
@@ -183,6 +185,31 @@ namespace dotnet_api.Services.Fight
             }
 
             return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<HighScoreDto>>> GetHighScore(){
+            var serviceResponse = new ServiceResponse<List<HighScoreDto>>();
+            try{
+                var characters = await _context.Characters
+                                .Where(character => character.Fights > 0)
+                                .OrderByDescending(character => character.Victories)
+                                .ThenBy(character => character.Defeats)
+                                .ToListAsync();
+
+                if(characters is null){
+                    throw new Exception($"Not enough data to show the high score regarding the fights !!!");
+                }
+
+                serviceResponse.Data = characters.Select(character => _mapper.Map<HighScoreDto>(character)).ToList();
+
+                return serviceResponse;
+            }
+            catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                serviceResponse.Data = null;
+                return serviceResponse;
+            }
         }
     }
 }
