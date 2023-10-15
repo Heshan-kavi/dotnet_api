@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace dotnet_api.Controllers
 {
-    [Route("Fight/[controller]")]
+    [Route("api/[controller]")]
     public class FightController : Controller
     {
         private readonly IFightService _fightService;
@@ -41,6 +41,15 @@ namespace dotnet_api.Controllers
         [HttpPost()]
         public async Task<ActionResult<ServiceResponse<FightResultDto>>> Fight(FightRequestDto request){
             var response = await _fightService.Fight(request);
+            if(!response.Success){
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<List<HighScoreDto>>>> GetHighScore (){
+            var response = await _fightService.GetHighScore();
             if(!response.Success){
                 return NotFound(response);
             }
