@@ -48,7 +48,10 @@ namespace dotnet_api.Services.CharacterService
         public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter (UpdateCharacterDto updatedCharacter){
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             try{
-                var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id && c.User.Id == GetUserId());
+                var character = await _context.Characters
+                                    .Include(character => character.Weapon)
+                                    .Include(character => character.Skills)
+                                    .FirstOrDefaultAsync(c => c.Id == updatedCharacter.Id && c.User.Id == GetUserId());
 
                 if(character is null){
                     throw new Exception($"Your requested character not found in here !!!");
@@ -75,13 +78,19 @@ namespace dotnet_api.Services.CharacterService
 
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters (){
             var serviceResponse = new ServiceResponse<List<GetCharacterDto>>();
-            var returnedCharacters = await _context.Characters.Where(character => character.User.Id == GetUserId()).ToListAsync();
+            var returnedCharacters = await _context.Characters
+                                        .Include(character => character.Weapon)
+                                        .Include(character => character.Skills)
+                                        .Where(character => character.User.Id == GetUserId()).ToListAsync();
             serviceResponse.Data = returnedCharacters.Select(character => _mapper.Map<GetCharacterDto>(character)).ToList();
             return serviceResponse;
         }
         
         public async Task<ServiceResponse<GetCharacterDto>> GetSingleCharacter (int id){
-            var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
+            var character = await _context.Characters
+                                .Include(character => character.Weapon)
+                                .Include(character => character.Skills)
+                                .FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
             var serviceResponse = new ServiceResponse<GetCharacterDto>();
             serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
             serviceResponse.Success = character is not null ? true : false;
