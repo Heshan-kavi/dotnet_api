@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.IO.Enumeration;
 using System.Data;
 using System.Security.Claims;
@@ -91,7 +92,8 @@ namespace dotnet_api.Data
             List<Claim> claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(

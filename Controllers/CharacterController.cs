@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace dotnet_api.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Player,Admin")]
     [ApiController]
     [Route("api/[controller]")]
     public class CharacterController : ControllerBase
