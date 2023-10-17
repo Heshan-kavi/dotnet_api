@@ -12,7 +12,7 @@ using dotnet_api.Data;
 namespace dotnet_api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231015152946_Initialstep")]
+    [Migration("20231017043538_Initialstep")]
     partial class Initialstep
     {
         /// <inheritdoc />
