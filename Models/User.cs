@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace dotnet_api.Models
 {
@@ -12,5 +13,7 @@ namespace dotnet_api.Models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         public List<Character>? Characters { get; set; }
+        [Required]
+        public string Role { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using System.Reflection.Metadata;
 using System.Reflection.Emit;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace dotnet_api.Data
                 new Skill {Id = 2, Name = "Frenzy", Damage = 40},
                 new Skill {Id = 3, Name = "Spear", Damage = 20}
             );
+            modelBuilder.Entity<User>().Property(user => user.Role).HasDefaultValue("Player");
        }
 
        public DbSet<Character> Characters => Set<Character>();
