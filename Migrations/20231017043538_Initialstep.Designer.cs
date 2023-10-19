@@ -12,8 +12,8 @@ using dotnet_api.Data;
 namespace dotnet_api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231013132004_fightsPropertiesToTheCharacters")]
-    partial class fightsPropertiesToTheCharacters
+    [Migration("20231017043538_Initialstep")]
+    partial class Initialstep
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -141,6 +141,12 @@ namespace dotnet_api.Migrations
                     b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Player");
 
                     b.Property<string>("UserName")
                         .IsRequired()
