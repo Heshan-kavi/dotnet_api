@@ -10,18 +10,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace dotnet_api.Services.Fight
 {
     public class FightService : IFightService
     {
-        private readonly DataContext _context;
         private readonly IMapper _mapper;
+        private readonly DataContext _context;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public FightService (DataContext context, IMapper mapper){
-            _context = context;
+        public FightService (IMapper mapper, DataContext context, IHttpContextAccessor httpContextAccessor)
+        {
             _mapper = mapper;
+            _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
+
+        private int GetUserId () => int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
         private static int DoWeaponAttack(Character attacker, Character opponent){
             int damage = attacker.Weapon.Damage + (new Random().Next(attacker.Strength));
@@ -192,6 +198,32 @@ namespace dotnet_api.Services.Fight
             try{
                 var characters = await _context.Characters
                                 .Where(character => character.Fights > 0)
+                                .OrderByDescending(character => character.Victories)
+                                .ThenBy(character => character.Defeats)
+                                .ToListAsync();
+
+                if(characters is null){
+                    throw new Exception($"Not enough data to show the high score regarding the fights !!!");
+                }
+
+                serviceResponse.Data = characters.Select(character => _mapper.Map<HighScoreDto>(character)).ToList();
+
+                return serviceResponse;
+            }
+            catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                serviceResponse.Data = null;
+                return serviceResponse;
+            }
+        }
+
+        public async Task<ServiceResponse<List<HighScoreDto>>> GetHighScoreUser(){
+            var serviceResponse = new ServiceResponse<List<HighScoreDto>>();
+            try{
+                var characters = await _context.Characters
+                                .Where(character => character.Fights > 0)
+                                .Where(character => character.User.Id == GetUserId())
                                 .OrderByDescending(character => character.Victories)
                                 .ThenBy(character => character.Defeats)
                                 .ToListAsync();
