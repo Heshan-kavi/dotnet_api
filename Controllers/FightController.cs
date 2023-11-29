@@ -7,9 +7,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace dotnet_api.Controllers
 {
+    [Authorize(Roles = "Player,Admin") ]
+    [ApiController]
     [Route("api/[controller]")]
     public class FightController : Controller
     {
@@ -47,9 +50,18 @@ namespace dotnet_api.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
+        [HttpGet("All")]
         public async Task<ActionResult<ServiceResponse<List<HighScoreDto>>>> GetHighScore (){
             var response = await _fightService.GetHighScore();
+            if(!response.Success){
+                return NotFound(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet("User")]
+        public async Task<ActionResult<ServiceResponse<List<HighScoreDto>>>> GetHighScoreForUser (){
+            var response = await _fightService.GetHighScoreUser();
             if(!response.Success){
                 return NotFound(response);
             }
