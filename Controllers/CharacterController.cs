@@ -35,6 +35,11 @@ namespace dotnet_api.Controllers
             return Ok(await _characterService.GetSingleCharacter(id));
         }
 
+        [HttpGet("Skill/{id}")]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> GetCharacterSkills(int id){
+            return Ok(await _characterService.GetCharacterSkills(id));
+        }
+
         [HttpPost()]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> AddCharacter(AddCharacterDto newCharacter){
             return Ok(await _characterService.AddCharacter(newCharacter));
