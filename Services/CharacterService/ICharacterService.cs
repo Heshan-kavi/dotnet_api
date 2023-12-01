@@ -12,6 +12,7 @@ namespace dotnet_api.Services.CharacterService
         Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters ();
         Task<ServiceResponse<GetCharacterDto>> GetSingleCharacter (int id);
         Task<ServiceResponse<GetCharacterDto>> GetCharacterSkills (int id);
+        Task<ServiceResponse<GetCharacterDto>> GetCharacterWeapon (int id);
         Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter (int id);
         Task<ServiceResponse<GetCharacterDto>> AddSkill (AddCharacterSkillDto newCharacterSkill);
     }

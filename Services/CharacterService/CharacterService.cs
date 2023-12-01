@@ -117,6 +117,17 @@ namespace dotnet_api.Services.CharacterService
             serviceResponse.Message = character is not null ? "We found the character for you" : "We couldn't find the character that you're looking for";
             return serviceResponse;
         }
+        
+        public async Task<ServiceResponse<GetCharacterDto>> GetCharacterWeapon (int id){
+            var character = await _context.Characters
+                                .Include(character => character.Weapon)
+                                .FirstOrDefaultAsync(c => c.Id == id && c.User.Id == GetUserId());
+            var serviceResponse = new ServiceResponse<GetCharacterDto>();
+            serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
+            serviceResponse.Success = character is not null ? true : false;
+            serviceResponse.Message = character is not null ? "We found the character for you" : "We couldn't find the character that you're looking for";
+            return serviceResponse;
+        }
 
         public async Task<ServiceResponse<List<GetCharacterDto>>> DeleteCharacter (int id){
             var userId = GetUserId();
