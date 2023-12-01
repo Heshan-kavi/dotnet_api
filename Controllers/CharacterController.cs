@@ -40,6 +40,11 @@ namespace dotnet_api.Controllers
             return Ok(await _characterService.GetCharacterSkills(id));
         }
 
+        [HttpGet("Weapon/{id}")]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> GetCharacterWeapon(int id){
+            return Ok(await _characterService.GetCharacterWeapon(id));
+        }
+
         [HttpPost()]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> AddCharacter(AddCharacterDto newCharacter){
             return Ok(await _characterService.AddCharacter(newCharacter));
