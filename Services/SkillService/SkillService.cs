@@ -23,7 +23,8 @@ namespace dotnet_api.Services.SkillService
         private int GetUserId () => int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
         public async Task<ServiceResponse<List<GetSkillDto>>> GetSkillsByUser(){
-
+            
+            return null;
         }
     }
 }
