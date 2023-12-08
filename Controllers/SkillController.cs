@@ -11,31 +11,32 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace dotnet_api.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Player,Admin")]
     [ApiController]
     [Route("api/[controller]")]
-    public class SkillCOntroller : ControllerBase
+    public class SkillController : ControllerBase
     {
-        private readonly IWeaponService _weaponService;
+        private readonly ISkillService _skillService;
 
-        public SkillCOntroller(IWeaponService weaponService)
+        public SkillController(ISkillService skillService)
         {
-            _weaponService = weaponService;
+            _skillService = skillService;
         }
 
+        //Comment : int skill id should be changed into a relevant type when implementing
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> AddWeapon(AddWeaponDto newWeapon){
-                return Ok(await _weaponService.AddWeapon(newWeapon));
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> AddSkill(int skillId){
+                return Ok(await _skillService.AddSkill(skillId));
         }
 
         [HttpDelete("{skillId}")]
-        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> DeleteWeapon(int skillId){
-                return Ok(await _weaponService.DeleteWeapon(skillId));
+        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> DeleteSkill(int skillId){
+                return Ok(await _skillService.DeleteSkill(skillId));
         }
 
         [HttpPut]
-        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> UpdateWeapon(UpdateWeaponDto existingWeapon){
-                return Ok(await _weaponService.UpdateWeapon(existingWeapon));
+        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> UpdateSkill(int skillId){
+                return Ok(await _skillService.UpdateSkill(skillId));
         }
     }
 }
