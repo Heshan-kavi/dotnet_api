@@ -26,5 +26,15 @@ namespace dotnet_api.Controllers
        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> AddWeapon(AddWeaponDto newWeapon){
             return Ok(await _weaponService.AddWeapon(newWeapon));
        }
+
+       [HttpDelete("{weaponId}")]
+       public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> DeleteWeapon(int weaponId){
+            return Ok(await _weaponService.DeleteWeapon(weaponId));
+       }
+
+       [HttpPut]
+       public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> UpdateWeapon(UpdateWeaponDto existingWeapon){
+            return Ok(await _weaponService.UpdateWeapon(existingWeapon));
+       }
     }
 }
