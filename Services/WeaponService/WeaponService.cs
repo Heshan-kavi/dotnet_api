@@ -1,4 +1,6 @@
-global using AutoMapper;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.ComponentModel;
 using System.Security.Claims;
 using System;
 using System.Collections.Generic;
@@ -35,6 +37,54 @@ namespace dotnet_api.Services.WeaponService
                 _context.Weapons.Add(_mapper.Map<Weapon>(newWeapon)); 
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = _mapper.Map<GetCharacterDto>(character);
+                return serviceResponse;
+
+            }catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetWeaponDto>> DeleteWeapon(int weaponId){
+            var serviceResponse = new ServiceResponse<GetWeaponDto>();
+            try{
+                var weapon = await _context.Weapons.FirstOrDefaultAsync(weapon => weapon.Id == weaponId && weapon.Character.User.Id == GetUserId());
+                if(weapon is null){
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Couldn't do the delete weapon operations at the moment!!!";
+
+                    return serviceResponse;
+                }
+                _context.Weapons.Remove(weapon); 
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetWeaponDto>(weapon);
+                return serviceResponse;
+
+            }catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<GetWeaponDto>> UpdateWeapon(UpdateWeaponDto existingWeapon){
+            var serviceResponse = new ServiceResponse<GetWeaponDto>();
+            try{
+                var weapon = await _context.Weapons.FirstOrDefaultAsync(weapon => weapon.Id == existingWeapon.Id && weapon.Character.User.Id == GetUserId());
+                if(weapon is null){
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Couldn't do the update weapon operations at the moment!!!";
+
+                    return serviceResponse;
+                }
+                weapon.Name = existingWeapon.Name;
+                weapon.Damage = existingWeapon.Damage;
+
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetWeaponDto>(weapon);
                 return serviceResponse;
 
             }catch(Exception ex){
