@@ -41,9 +41,30 @@ namespace dotnet_api.Services.SkillService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetSkillDto>> UpdateSkill (int id){
-            Console.WriteLine("comes to the update skill function!");
-            return null;
+        public async Task<ServiceResponse<GetSkillDto>> UpdateSkill (UpdateSkillDto existingSkill){
+            var serviceResponse = new ServiceResponse<GetSkillDto>();
+
+            try{
+                var skill = await _context.Skills
+                                    .FirstOrDefaultAsync(s => s.Id == existingSkill.SkillId);
+
+                if(skill is null){
+                    throw new Exception($"Your requested skill not found in here !!!");
+                }
+
+                skill.Name = existingSkill.Name;
+                skill.Damage = existingSkill.Damage;
+
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetSkillDto>(skill);
+                serviceResponse.Message = "Relevant Skill updated successfully !!!";
+                return serviceResponse;
+            }
+            catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+                return serviceResponse;
+            }
         }
 
         public async Task<ServiceResponse<GetSkillDto>> DeleteSkill (int id){

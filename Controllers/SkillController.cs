@@ -35,8 +35,8 @@ namespace dotnet_api.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> UpdateSkill(int skillId){
-                return Ok(await _skillService.UpdateSkill(skillId));
+        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> UpdateSkill(UpdateSkillDto existingSkill){
+                return Ok(await _skillService.UpdateSkill(existingSkill));
         }
     }
 }
