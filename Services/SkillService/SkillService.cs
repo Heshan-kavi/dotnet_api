@@ -67,9 +67,28 @@ namespace dotnet_api.Services.SkillService
             }
         }
 
-        public async Task<ServiceResponse<GetSkillDto>> DeleteSkill (int id){
-            Console.WriteLine("comes to the delete skill function!");
-            return null;
+        public async Task<ServiceResponse<GetSkillDto>> DeleteSkill (int skillId){
+            var serviceResponse = new ServiceResponse<GetSkillDto>();
+
+            try{
+                var skill = await _context.Skills.FirstOrDefaultAsync(skill => skill.Id == skillId);
+                if(skill is null){
+                    serviceResponse.Success = false;
+                    serviceResponse.Message = "Couldn't do the delete skill operations at the moment!!!";
+
+                    return serviceResponse;
+                }
+                _context.Skills.Remove(skill);
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = _mapper.Map<GetSkillDto>(skill);
+                return serviceResponse;
+
+            }catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
         }
     }
 }
