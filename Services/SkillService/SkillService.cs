@@ -1,3 +1,5 @@
+using System.Net.Sockets;
+using System.Security.Claims;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +20,25 @@ namespace dotnet_api.Services.SkillService
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ServiceResponse<GetSkillDto>> AddSkill (int id){
-            Console.WriteLine("comes to the add skill function!");
-            return null;
+        private int GetUserId () => int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+        public async Task<ServiceResponse<List<GetSkillDto>>> AddSkill (AddSkillDto newSkill){
+            var serviceResponse = new ServiceResponse<List<GetSkillDto>>();
+
+            try{
+                _context.Skills.Add(_mapper.Map<Skill>(newSkill));
+                await _context.SaveChangesAsync();
+                serviceResponse.Data = await _context.Skills
+                    .Select(skill => _mapper.Map<GetSkillDto>(skill))
+                    .ToListAsync();
+                return serviceResponse;
+
+            }catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetSkillDto>> UpdateSkill (int id){
