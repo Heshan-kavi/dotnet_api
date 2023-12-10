@@ -14,6 +14,7 @@ namespace dotnet_api
             CreateMap<DeleteWeaponDto, Weapon>();
             CreateMap<Weapon, GetWeaponDto>();
             CreateMap<Skill, GetSkillDto>();
+            CreateMap<AddSkillDto, Skill>();
             CreateMap<Character, HighScoreDto>();
         }
     }
