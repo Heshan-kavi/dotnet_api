@@ -25,8 +25,8 @@ namespace dotnet_api.Controllers
 
         //Comment : int skill id should be changed into a relevant type when implementing
         [HttpPost]
-        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> AddSkill(int skillId){
-                return Ok(await _skillService.AddSkill(skillId));
+        public async Task<ActionResult<ServiceResponse<List<GetSkillDto>>>> AddSkill(AddSkillDto newSkill){
+                return Ok(await _skillService.AddSkill(newSkill));
         }
 
         [HttpDelete("{skillId}")]
@@ -35,8 +35,8 @@ namespace dotnet_api.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> UpdateSkill(int skillId){
-                return Ok(await _skillService.UpdateSkill(skillId));
+        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> UpdateSkill(UpdateSkillDto existingSkill){
+                return Ok(await _skillService.UpdateSkill(existingSkill));
         }
     }
 }
