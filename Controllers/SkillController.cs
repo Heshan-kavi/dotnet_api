@@ -40,7 +40,7 @@ namespace dotnet_api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<ServiceResponse<List<GetWeaponDto>>>> GetSkillsAll(){
+        public async Task<ActionResult<ServiceResponse<List<GetSkillDtoWithCharacters>>>> GetSkillsAll(){
                 return Ok(await _skillService.GetSkillsAll());
         }
     }
