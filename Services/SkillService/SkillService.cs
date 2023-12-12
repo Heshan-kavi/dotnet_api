@@ -90,5 +90,23 @@ namespace dotnet_api.Services.SkillService
 
             return serviceResponse;
         }
+
+        public async Task<ServiceResponse<List<GetSkillDtoWithCharacters>>> GetSkillsAll (){
+            var serviceResponse = new ServiceResponse<List<GetSkillDtoWithCharacters>>();
+
+            try{
+                var returnedSkills = await _context.Skills
+                                        .Include(skill => skill.Characters)
+                                        .ToListAsync();
+                serviceResponse.Data = returnedSkills.Select(skill => _mapper.Map<GetSkillDtoWithCharacters>(skill)).ToList();
+                return serviceResponse;
+
+            }catch(Exception ex){
+                serviceResponse.Success = false;
+                serviceResponse.Message = ex.Message;
+            }
+
+            return serviceResponse;
+        }
     }
 }
