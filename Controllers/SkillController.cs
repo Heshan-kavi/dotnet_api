@@ -38,5 +38,10 @@ namespace dotnet_api.Controllers
         public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> UpdateSkill(UpdateSkillDto existingSkill){
                 return Ok(await _skillService.UpdateSkill(existingSkill));
         }
+
+        [HttpGet]
+        public async Task<ActionResult<ServiceResponse<List<GetSkillDtoWithCharacters>>>> GetSkillsAll(){
+                return Ok(await _skillService.GetSkillsAll());
+        }
     }
 }
