@@ -11,5 +11,6 @@ namespace dotnet_api.Services.SkillService
         Task<ServiceResponse<List<GetSkillDto>>> AddSkill (AddSkillDto newSkill);
         Task<ServiceResponse<GetSkillDto>> UpdateSkill (UpdateSkillDto existingSkill);
         Task<ServiceResponse<GetSkillDto>> DeleteSkill (int skillId);
+        Task<ServiceResponse<List<GetSkillDtoWithCharacters>>> GetSkillsAll ();
     }
 }
