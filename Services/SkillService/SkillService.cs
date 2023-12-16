@@ -20,12 +20,16 @@ namespace dotnet_api.Services.SkillService
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private int GetUserId () => int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        private string GetUserRole () => _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
         public async Task<ServiceResponse<List<GetSkillDto>>> AddSkill (AddSkillDto newSkill){
             var serviceResponse = new ServiceResponse<List<GetSkillDto>>();
 
             try{
+                if(GetUserRole() != "Admin"){
+                    throw new Exception("Only Admin allowed to add a new skill");
+                }
+                Console.WriteLine(GetUserRole());
                 _context.Skills.Add(_mapper.Map<Skill>(newSkill));
                 await _context.SaveChangesAsync();
                 serviceResponse.Data = await _context.Skills
@@ -45,9 +49,10 @@ namespace dotnet_api.Services.SkillService
             var serviceResponse = new ServiceResponse<GetSkillDto>();
 
             try{
-                var skill = await _context.Skills
-                                    .FirstOrDefaultAsync(s => s.Id == existingSkill.SkillId);
-
+                if(GetUserRole() != "Admin"){
+                    throw new Exception("Only Admin allowed to update a skill");
+                }
+                var skill = await _context.Skills.FirstOrDefaultAsync(s => s.Id == existingSkill.SkillId);
                 if(skill is null){
                     throw new Exception($"Your requested skill not found in here !!!");
                 }
@@ -71,6 +76,9 @@ namespace dotnet_api.Services.SkillService
             var serviceResponse = new ServiceResponse<GetSkillDto>();
 
             try{
+                if(GetUserRole() != "Admin"){
+                    throw new Exception("Only Admin allowed to delete a skill");
+                }
                 var skill = await _context.Skills.FirstOrDefaultAsync(skill => skill.Id == skillId);
                 if(skill is null){
                     serviceResponse.Success = false;
