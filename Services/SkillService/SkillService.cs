@@ -1,3 +1,5 @@
+using System.Xml;
+using System.Reflection.PortableExecutable;
 using System.Net.Sockets;
 using System.Security.Claims;
 using System;
@@ -19,6 +21,8 @@ namespace dotnet_api.Services.SkillService
             _context = context;
             _httpContextAccessor = httpContextAccessor;
         }
+
+        private int GetUserId () => int.Parse(_httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
         private string GetUserRole () => _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.Role).Value;
 
@@ -103,7 +107,12 @@ namespace dotnet_api.Services.SkillService
             var serviceResponse = new ServiceResponse<List<GetSkillDtoWithCharacters>>();
 
             try{
-                var returnedSkills = await _context.Skills
+                var returnedSkills = GetUserRole() == "Admin" ? 
+                                        await _context.Skills
+                                        .Include(skill => skill.Characters)
+                                        .ToListAsync()
+                                        : 
+                                        await _context.Skills
                                         .Include(skill => skill.Characters)
                                         .ToListAsync();
                 serviceResponse.Data = returnedSkills.Select(skill => _mapper.Map<GetSkillDtoWithCharacters>(skill)).ToList();
